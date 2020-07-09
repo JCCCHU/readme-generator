@@ -71,8 +71,10 @@ const userInfo = {
   githubEmail:""
 }
 
+/* Never ended up using this. Oops
 function writeToFile(fileName, data) {
 }
+*/
 
 function promptUser(questionSet) {
   return inquirer.prompt(questionSet);
@@ -82,15 +84,9 @@ async function init() {
   console.log("README Generator 2020");
   try {
     let input = await promptUser(githubUsername);
-    console.log(queryURL + input.username);
     axios.get(queryURL+input.username).then(function(response) {
-      console.log(response.data);
-      console.log(response.data.items[0]);
-      console.log(response.data.items[0].avatar_url);
-      console.log(response.data.items[0].url);
       userInfo.githubAvatarURL = response.data.items[0].avatar_url;
       userInfo.githubEmail = response.data.items[0].url;
-      console.log(userInfo);
       console.log("Successfully logged");
       readmeBuilder();
     })
@@ -101,19 +97,13 @@ async function init() {
 }
 
 async function readmeBuilder() {
-  console.log("Generating prompts");
   try {
     let input = await promptUser(questions);
     input.githubAvatarURL = userInfo.githubAvatarURL;
     input.githubEmail = userInfo.githubEmail;
-
     const svg = makeBadge(badgeFormat);
-    console.log(svg);
-
-    input.badge = makeBadge({message:"world"});
-    console.log("Successfully logged answers");
+    input.badge = svg;
     console.log("Building README");
-    console.log(input);
     let readme = mdutil.generateMarkdown(input);
     await writeFileAsync("result.md",readme);
     console.log("Readme built.");
